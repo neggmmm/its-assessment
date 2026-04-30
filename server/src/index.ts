@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { config } from './configuration/config.ts';
 import { sequelize } from './configuration/db.config.ts';
@@ -11,6 +12,10 @@ import submissionRouter from './modules/submissions/submission.route.ts';
 
 const app = express();
 
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 app.use(express.json());
 app.use(cookieParser());
 app.use('/auth', authRouter);
