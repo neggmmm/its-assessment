@@ -1,5 +1,4 @@
 import { Exam } from './exam.model.ts';
-import { ExamQuestion } from './exam-question.model.ts';
 import { Question } from './question.model.ts';
 
 type CreateExamInput = {
@@ -9,8 +8,6 @@ type CreateExamInput = {
 };
 
 type UpdateExamInput = Partial<Pick<CreateExamInput, 'title' | 'description'>>;
-
-
 
 export class ExamService {
   async createExam(input: CreateExamInput) {
@@ -55,4 +52,25 @@ export class ExamService {
     const deletedCount = await Exam.destroy({ where: { id } });
     return deletedCount > 0;
   }
+
+async addQuestionsToExam(examId: number, questionIds: number[]) {
+  const exam = await Exam.findByPk(examId);
+
+  if (!exam) {
+    throw new Error('Exam not found');
+  }
+
+  const uniqueQuestionIds = [...new Set(questionIds)];
+
+  const questions = await Question.findAll({
+    where: { id: uniqueQuestionIds },
+  });
+
+  if (questions.length !== uniqueQuestionIds.length) {
+    throw new Error('One or more questions not found');
+  }
+    await (exam as any).setQuestions(questions);
+
+  return this.findExamById(examId);
+}
 }
