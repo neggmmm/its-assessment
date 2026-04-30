@@ -5,27 +5,34 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    env_file:
-      - .env
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: its
+      DB_USER: postgres
+      DB_PASSWORD: negm
+      PORT: 8000
+      JWT_SECRET: EBeTcPIJuh3tEHFt5dA3SZtoM5doQFrIiJXZwiYX
+      JWT_EXPIRES_IN: 1h
+      FRONTEND_URL: https://exam-its.vercel.app/
     ports:
       - '8001:8000'
     depends_on:
       - db
-    environment:
-      - NODE_ENV=production
     restart: unless-stopped
 
   db:
-    image: postgres:16-alpine
-    container_name: postgres-db
-    restart: unless-stopped
-    environment:
+     image: postgres:16-alpine
+     container_name: postgres-db
+     restart: unless-stopped
+
+     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: app_db
-    volumes:
+      POSTGRES_PASSWORD: negm
+      POSTGRES_DB: its
+     volumes:
       - pgdata:/var/lib/postgresql/data
-    ports:
+     ports:
       - '5432:5432'
 
 volumes:
