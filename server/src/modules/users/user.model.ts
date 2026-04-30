@@ -31,7 +31,7 @@ export interface UserCreationAttributes
 
 export type PublicUser = Omit<UserAttributes, 'password'>;
 
-export type RegisterUserInput = Pick<UserAttributes, 'name' | 'email' | 'password'>;
+export type RegisterUserInput = Pick<UserAttributes, 'name' | 'email' | 'password' | 'role'>;
 
 export type CreateUserInput = Pick<UserAttributes, 'name' | 'email' | 'password'> &
   Partial<Pick<UserAttributes, 'role'>>;

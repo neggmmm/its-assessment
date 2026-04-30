@@ -1,4 +1,5 @@
-import { Exam } from './exam.model.ts';
+import { Exam } from '../exams/exam.model.ts';
+import '../exams/exam-question.model.ts';
 import { Question } from './question.model.ts';
 
 type UpdateQuestionInput = {

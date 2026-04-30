@@ -1,7 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../../configuration/db.config.ts';
 import { Exam } from './exam.model.ts';
-import { Question } from './question.model.ts';
+import { Question } from '../questions/question.model.ts';
 
 export class ExamQuestion extends Model {}
 

@@ -1,5 +1,6 @@
 import { Exam } from './exam.model.ts';
-import { Question } from './question.model.ts';
+import { ExamQuestion } from './exam-question.model.ts';
+import { Question } from '../questions/question.model.ts';
 
 type CreateExamInput = {
   title: string;
@@ -53,24 +54,32 @@ export class ExamService {
     return deletedCount > 0;
   }
 
-async addQuestionsToExam(examId: number, questionIds: number[]) {
-  const exam = await Exam.findByPk(examId);
+  async addQuestionsToExam(examId: number, questionIds: number[]) {
+    const exam = await Exam.findByPk(examId);
 
-  if (!exam) {
-    throw new Error('Exam not found');
+    if (!exam) {
+      throw new Error('Exam not found');
+    }
+
+    const uniqueQuestionIds = [...new Set(questionIds)];
+
+    const questions = await Question.findAll({
+      where: { id: uniqueQuestionIds },
+    });
+
+    if (questions.length !== uniqueQuestionIds.length) {
+      throw new Error('One or more questions not found');
+    }
+
+    await Promise.all(
+      uniqueQuestionIds.map((questionId) =>
+        ExamQuestion.findOrCreate({
+          where: { examId, questionId },
+          defaults: { examId, questionId },
+        })
+      )
+    );
+
+    return this.findExamById(examId);
   }
-
-  const uniqueQuestionIds = [...new Set(questionIds)];
-
-  const questions = await Question.findAll({
-    where: { id: uniqueQuestionIds },
-  });
-
-  if (questions.length !== uniqueQuestionIds.length) {
-    throw new Error('One or more questions not found');
-  }
-    await (exam as any).setQuestions(questions);
-
-  return this.findExamById(examId);
-}
 }
