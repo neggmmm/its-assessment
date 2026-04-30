@@ -5,6 +5,9 @@ import { sequelize } from './configuration/db.config.ts';
 import userRouter from './modules/users/user.routes.ts';
 import authRouter from './modules/auth/auth.routes.ts';
 import examRouter from './modules/exams/exam.routes.ts';
+import assignmentRouter from './modules/assignments/assignment.route.ts';
+import questionRouter from './modules/questions/question.routes.ts';
+import submissionRouter from './modules/submissions/submission.route.ts';
 
 const app = express();
 
@@ -13,6 +16,9 @@ app.use(cookieParser());
 app.use('/auth', authRouter);
 app.use('/users', userRouter);
 app.use('/exams', examRouter);
+app.use('/questions', questionRouter);
+app.use('/assignments', assignmentRouter);
+app.use('/submissions', submissionRouter);
 
 async function start() {
   try {
