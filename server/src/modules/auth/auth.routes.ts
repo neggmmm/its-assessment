@@ -3,7 +3,7 @@ import type { Request, Response } from 'express';
 import { config } from '../../configuration/config.ts';
 import { ensureAuthenticated } from './auth.middleware.ts';
 import { AuthService } from './auth.service.ts';
-import { UserRole, type PublicUser } from '../user/user.model.ts';
+import { UserRole, type PublicUser } from '../users/user.model.ts';
 
 const router = Router();
 const authService = new AuthService();

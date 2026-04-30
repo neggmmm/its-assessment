@@ -1,5 +1,6 @@
-import { Model } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import type { Optional } from 'sequelize';
+import { sequelize } from '../../configuration/db.config.ts';
 
 // Role enum
 export const UserRole = {
@@ -51,3 +52,37 @@ export class User
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
 }
+
+User.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    role: {
+      type: DataTypes.ENUM(...Object.values(UserRole)),
+      allowNull: false,
+      defaultValue: UserRole.EMPLOYEE,
+    },
+  },
+  {
+    sequelize,
+    modelName: 'User',
+    tableName: 'users',
+    timestamps: true,
+  }
+);

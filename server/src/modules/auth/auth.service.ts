@@ -1,9 +1,9 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { config } from '../../configuration/config.ts';
-import { UserRole, type RegisterUserInput, type UserAttributes } from '../user/user.model.ts';
-import { sanitizeUser } from '../user/utils/sanitize-user.ts';
-import { UserRepository } from '../user/user.repository.ts';
+import { UserRole, type RegisterUserInput, type UserAttributes } from '../users/user.model.ts';
+import { sanitizeUser } from '../users/utils/sanitize-user.ts';
+import { UserRepository } from '../users/user.repository.ts';
 
 const { sign, verify } = jwt;
 

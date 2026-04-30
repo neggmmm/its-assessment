@@ -63,6 +63,10 @@ router.put('/:id', requireRole(UserRole.ADMIN), async (req: Request<{ id: string
     }
 
     const { name, email, role } = req.body;
+    if (role !== undefined && !isUserRole(role)) {
+      return res.status(400).json({ message: 'Invalid user payload' });
+    }
+
     const updates: UpdateUserInput = {};
 
     if (name !== undefined) updates.name = name;

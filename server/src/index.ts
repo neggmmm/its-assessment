@@ -2,8 +2,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import { config } from './configuration/config.ts';
 import { sequelize } from './configuration/db.config.ts';
-import './modules/user/user.model.ts';
-import userRouter from './modules/user/user.routes.ts';
+import userRouter from './modules/users/user.routes.ts';
 import authRouter from './modules/auth/auth.routes.ts';
 
 const app = express();

@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
 import type { NextFunction, Request, Response } from 'express';
 import { config } from '../../configuration/config.ts';
-import { UserRepository } from '../user/user.repository.ts';
-import { sanitizeUser } from '../user/utils/sanitize-user.ts';
-import { UserRole, type PublicUser } from '../user/user.model.ts';
+import { UserRepository } from '../users/user.repository.ts';
+import { sanitizeUser } from '../users/utils/sanitize-user.ts';
+import { UserRole, type PublicUser } from '../users/user.model.ts';
 
 const userRepository = new UserRepository();
 export async function ensureAuthenticated(req: Request, res: Response, next: NextFunction) {
