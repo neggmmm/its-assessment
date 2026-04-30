@@ -1,43 +1,58 @@
-import { Exam } from './exam.model';
-import { Question } from './question.model';
+import { Exam } from './exam.model.ts';
+import { ExamQuestion } from './exam-question.model.ts';
+import { Question } from './question.model.ts';
+
+type CreateExamInput = {
+  title: string;
+  description: string;
+  createdBy: number;
+};
+
+type UpdateExamInput = Partial<Pick<CreateExamInput, 'title' | 'description'>>;
+
+
 
 export class ExamService {
-  async createExam(data: any, userId: number) {
-    return Exam.create({
-      ...data,
-      createdBy: userId,
+  async createExam(input: CreateExamInput) {
+    return Exam.create(input);
+  }
+
+  async findAllExams() {
+    return Exam.findAll({
+      include: [
+        {
+          model: Question,
+          as: 'questions',
+          through: { attributes: [] },
+        },
+      ],
     });
   }
 
-  async createQuestion(data: any, userId: number) {
-    return Question.create({
-      ...data,
-      createdBy: userId,
-    });
-  }
-
-  async addQuestionsToExam(examId: number, questionIds: number[]) {
-    const exam = await Exam.findByPk(examId);
-
-    if (!exam) throw new Error('Exam not found');
-
-    const questions = await Question.findAll({
-      where: { id: questionIds },
-    });
-
-    await exam.$set('questions', questions);
-
-    return exam;
-  }
-
-  async getExamById(id: number) {
+  async findExamById(id: number) {
     return Exam.findByPk(id, {
       include: [
         {
           model: Question,
           as: 'questions',
+          through: { attributes: [] },
         },
       ],
     });
+  }
+
+  async updateExam(id: number, updates: UpdateExamInput) {
+    const exam = await Exam.findByPk(id);
+    if (!exam) {
+      return null;
+    }
+
+    await exam.update(updates);
+    return this.findExamById(id);
+  }
+
+  async deleteExam(id: number) {
+    const deletedCount = await Exam.destroy({ where: { id } });
+    return deletedCount > 0;
   }
 }

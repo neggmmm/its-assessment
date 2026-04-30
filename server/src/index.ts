@@ -4,6 +4,7 @@ import { config } from './configuration/config.ts';
 import { sequelize } from './configuration/db.config.ts';
 import userRouter from './modules/users/user.routes.ts';
 import authRouter from './modules/auth/auth.routes.ts';
+import examRouter from './modules/exams/exam.routes.ts';
 
 const app = express();
 
@@ -11,6 +12,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use('/auth', authRouter);
 app.use('/users', userRouter);
+app.use('/exams', examRouter);
 
 async function start() {
   try {
