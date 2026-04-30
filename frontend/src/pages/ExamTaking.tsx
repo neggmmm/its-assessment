@@ -215,7 +215,6 @@ const ExamTaking: React.FC = () => {
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={(e) => handleImageUpload(question.id, e)}
                         className="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-slate-900 outline-none"
                       />
                     </label>
