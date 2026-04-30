@@ -23,13 +23,15 @@ Submission.init(
     },
 
     answer: {
-      type: DataTypes.ENUM('yes', 'partial', 'no'),
+      type: DataTypes.TEXT,
       allowNull: false,
+      comment: 'Can store selected choice text or yes/partial/no',
     },
 
     evidence: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true,
+      comment: 'Base64 encoded image or file path',
     },
   },
   {

@@ -16,7 +16,7 @@ export class SubmissionService {
 
   const examQuestionIds = assignment?.Exam?.questions?.map(q => q.id) || [];
 
-  return Promise.all(
+  const submissions = await Promise.all(
     answers.map((a) => {
       if (!examQuestionIds.includes(a.questionId)) {
         throw new Error(`Question ${a.questionId} not in exam`);
@@ -26,9 +26,15 @@ export class SubmissionService {
         assignmentId,
         questionId: a.questionId,
         answer: a.answer,
+        evidence: a.evidence || null,
       });
     })
   );
+
+  // Update assignment status to submitted
+  await assignment.update({ status: 'submitted' });
+
+  return submissions;
 }
 
     async getSubmissions(assignmentId: number) {

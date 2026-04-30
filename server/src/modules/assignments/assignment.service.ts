@@ -10,6 +10,23 @@ export class AssignmentService {
         return Assignment.findAll();
     }
 
+    async getAssignmentById(id: number) {
+        return Assignment.findByPk(id, {
+            include: [
+                {
+                    model: Exam,
+                    include: [
+                        {
+                            model: Question,
+                            as: 'questions',
+                            through: { attributes: [] },
+                        },
+                    ],
+                },
+            ],
+        });
+    }
+
     async getEmployeeAssignments(employeeId: number) {
         return Assignment.findAll({
             where: { employeeId },

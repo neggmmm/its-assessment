@@ -13,7 +13,7 @@ import submissionRouter from './modules/submissions/submission.route.ts';
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: config.frontendUrl,
   credentials: true
 }));
 app.use(express.json());

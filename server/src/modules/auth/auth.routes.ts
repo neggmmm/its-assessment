@@ -39,7 +39,7 @@ router.post('/login', async (req: Request, res: Response) => {
       maxAge: config.cookieMaxAge,
     });
 
-    res.json(user);
+    res.json({ user, token });
   } catch (error) {
     res.status(401).json({ message: 'Invalid credentials' });
   }

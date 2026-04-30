@@ -51,6 +51,20 @@ export async function getMyAssignments(req: Request, res: Response) {
     }
 }
 
+export async function getAssignmentById(req: Request, res: Response) {
+    try {
+        const assignment = await service.getAssignmentById(Number(req.params.id));
+        if (!assignment) {
+            return res.status(404).json({ message: 'Assignment not found' });
+        }
+
+        res.json(assignment);
+    } catch (error) {
+        console.error('Failed to fetch assignment:', error);
+        res.status(500).json({ message: getErrorMessage(error) });
+    }
+}
+
 export async function updateAssignmentStatus(req: Request, res: Response) {
     try {
         const { status } = req.body;

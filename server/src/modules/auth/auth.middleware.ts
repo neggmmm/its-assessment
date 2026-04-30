@@ -7,7 +7,16 @@ import { UserRole, type PublicUser } from '../users/user.model.ts';
 
 const userRepository = new UserRepository();
 export async function ensureAuthenticated(req: Request, res: Response, next: NextFunction) {
-  const token = req.cookies?.[config.cookieName];
+  // Check for token in cookies first, then in Authorization header
+  let token = req.cookies?.[config.cookieName];
+  
+  if (!token) {
+    const authHeader = req.headers.authorization;
+    if (authHeader?.startsWith('Bearer ')) {
+      token = authHeader.slice(7); // Remove 'Bearer ' prefix
+    }
+  }
+
   if (!token) {
     return res.status(401).json({ message: 'Authentication required' });
   }

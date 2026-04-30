@@ -18,6 +18,7 @@ export const config: {
     cookieName: string;
     cookieMaxAge: number;
     nodeEnv: string;
+    frontendUrl: string;
 } = {
     port: Number(process.env.PORT) || 8000,
     jwtSecret: requiredEnv('JWT_SECRET'),
@@ -25,4 +26,5 @@ export const config: {
     cookieName: process.env.AUTH_COOKIE_NAME || 'token',
     cookieMaxAge: Number(process.env.COOKIE_MAX_AGE) || 3600000,
     nodeEnv: process.env.NODE_ENV || 'development',
+    frontendUrl: requiredEnv('FRONTEND_URL'),
 };
