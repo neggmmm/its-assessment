@@ -17,7 +17,7 @@ export class AuthService {
       name: userData.name,
       email: userData.email,
       password: hashedPassword,
-      role: UserRole.EMPLOYEE,
+      role: userData.role,
     });
 
     return sanitizeUser(user.toJSON() as UserAttributes);

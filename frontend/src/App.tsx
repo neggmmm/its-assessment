@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Exams from './pages/Exams';
 import Questions from './pages/Questions';
@@ -42,6 +43,10 @@ const App: React.FC = () => {
         <Route
           path="/login"
           element={isAuthenticated ? <Navigate to={getDashboardRedirect()} replace /> : <Login />}
+        />
+        <Route
+          path="/register"
+          element={isAuthenticated ? <Navigate to={getDashboardRedirect()} replace /> : <Register />}
         />
 
         {/* Admin Routes */}

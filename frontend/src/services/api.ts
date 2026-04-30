@@ -24,6 +24,10 @@ export const authAPI = {
     const response = await api.post('/auth/login', credentials);
     return response.data;
   },
+  register: async (userData: { name: string; email: string; password: string; role: 'admin' | 'hr' | 'employee' }) => {
+    const response = await api.post('/auth/register', userData);
+    return response.data;
+  },
 };
 
 // Exams API

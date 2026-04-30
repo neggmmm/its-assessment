@@ -23,8 +23,7 @@ export class UserRepository {
     return User.findByPk(id);
   }
 
-  async delete(id: number) {
-    const affectedRows = await User.destroy({ where: { id } });
-    return affectedRows > 0;
+  async count() {
+    return User.count();
   }
 }
