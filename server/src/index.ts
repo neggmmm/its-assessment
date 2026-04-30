@@ -13,7 +13,7 @@ import submissionRouter from './modules/submissions/submission.route.ts';
 const app = express();
 
 app.use(cors({
-  origin: config.frontendUrl,
+  origin: ['http://localhost:5173','https://exam-its.vercel.app'],
   credentials: true
 }));
 app.use(express.json());
