@@ -2,12 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { questionsAPI } from '../services/api';
 
-interface Choice {
-  id: string;
-  text: string;
-  isCorrect: boolean;
-}
-
 const CreateQuestion: React.FC = () => {
   const navigate = useNavigate();
   const [questionText, setQuestionText] = useState('');
@@ -26,11 +20,6 @@ const CreateQuestion: React.FC = () => {
       return;
     }
 
-    const hasCorrectAnswer = filledChoices.some((c) => c.isCorrect);
-    if (!hasCorrectAnswer) {
-      setError('At least one choice must be marked as correct');
-      return;
-    }
 
     setLoading(true);
     setError('');
@@ -39,10 +28,6 @@ const CreateQuestion: React.FC = () => {
     try {
       const questionData = {
         text: questionText,
-        choices: filledChoices.map((c) => ({
-          text: c.text,
-          isCorrect: c.isCorrect,
-        })),
       };
 
       await questionsAPI.create(questionData);
