@@ -16,7 +16,7 @@ interface Exam {
 
 interface Answer {
   questionId: number;
-  answer: string;
+  answer: 'yes' | 'no' | 'partial';
   evidence?: string; // Base64 encoded image
 }
 
@@ -28,6 +28,7 @@ const ExamTaking: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [answers, setAnswers] = useState<Answer[]>([]);
+  const [finalScore, setFinalScore] = useState<number | null>(null);
 
   useEffect(() => {
     fetchExam();
@@ -60,7 +61,7 @@ const ExamTaking: React.FC = () => {
     }
   };
 
-  const handleAnswerSelect = (questionId: number, selectedChoice: string) => {
+  const handleAnswerSelect = (questionId: number, selectedChoice: 'yes' | 'no' | 'partial') => {
     setAnswers((prev) => {
       const existing = prev.find((a) => a.questionId === questionId);
       if (existing) {
@@ -72,27 +73,23 @@ const ExamTaking: React.FC = () => {
     });
   };
 
-  const handleImageUpload = (
-    questionId: number,
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const base64 = e.target?.result as string;
-        setAnswers((prev) => {
-          const existing = prev.find((a) => a.questionId === questionId);
-          if (existing) {
-            return prev.map((a) =>
-              a.questionId === questionId ? { ...a, evidence: base64 } : a
-            );
-          }
-          return [...prev, { questionId, answer: '', evidence: base64 }];
-        });
-      };
-      reader.readAsDataURL(file);
-    }
+  const calculateScore = (answers: Answer[]): number => {
+    const totalPoints = answers.reduce((sum, answer) => {
+      switch (answer.answer) {
+        case 'yes':
+          return sum + 2;
+        case 'partial':
+          return sum + 1;
+        case 'no':
+          return sum + 0;
+        default:
+          return sum;
+      }
+    }, 0);
+
+    // Scale to out of 5: max points = questions.length * 2, so divide by 2
+    const maxPoints = answers.length * 2;
+    return maxPoints > 0 ? Math.round((totalPoints / maxPoints) * 5 * 10) / 10 : 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -113,13 +110,23 @@ const ExamTaking: React.FC = () => {
       return;
     }
 
+    const invalidAnswer = answers.some(
+      (a) => !['yes', 'partial', 'no'].includes(a.answer)
+    );
+
+    if (invalidAnswer) {
+      setError('Please select only yes, partial, or no for each question');
+      return;
+    }
+
     setSubmitting(true);
     setError('');
 
     try {
       await submissionsAPI.submit(parseInt(assignmentId), answers);
-      // Redirect to assignments page
-      setTimeout(() => navigate('/assignments'), 1500);
+      const score = calculateScore(answers);
+      setFinalScore(score);
+      // Don't redirect immediately, show the score
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit exam');
     } finally {
@@ -156,7 +163,8 @@ const ExamTaking: React.FC = () => {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        {finalScore === null && (
+          <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-6">
             {exam.questions.map((question, qIndex) => {
               const questionAnswer = answers.find((a) => a.questionId === question.id);
@@ -172,14 +180,33 @@ const ExamTaking: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="mt-5">
-                    <textarea
-                      value={questionAnswer?.answer ?? ''}
-                      onChange={(e) => handleAnswerSelect(question.id, e.target.value)}
-                      placeholder="Enter your answer"
-                      rows={5}
-                      className="mt-2 w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                    />
+                  <div className="mt-5 space-y-4">
+                    <div className="text-sm font-medium text-slate-700">Select an answer</div>
+                    <div className="grid gap-3 sm:grid-cols-3">
+                      {(['yes', 'partial', 'no'] as const).map((option) => (
+                        <label
+                          key={option}
+                          className={`rounded-3xl border px-4 py-4 text-center transition ${
+                            questionAnswer?.answer === option
+                              ? 'border-blue-600 bg-blue-50 text-blue-700'
+                              : 'border-slate-200 bg-white text-slate-900'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name={`answer-${question.id}`}
+                            value={option}
+                            checked={questionAnswer?.answer === option}
+                            onChange={() => handleAnswerSelect(question.id, option)}
+                            className="sr-only"
+                          />
+                          <span className="block text-lg font-semibold capitalize">{option}</span>
+                          <span className="mt-1 block text-sm text-slate-500">
+                            {option === 'yes' ? 'Score 2' : option === 'partial' ? 'Score 1' : 'Score 0'}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
 
                   <div className="mt-5 space-y-3">
@@ -237,6 +264,24 @@ const ExamTaking: React.FC = () => {
             </button>
           </div>
         </form>
+        )}
+
+        {finalScore !== null && (
+          <div className="mt-8 rounded-3xl bg-emerald-50 p-8 text-center shadow-xl ring-1 ring-emerald-200">
+            <div className="text-4xl font-bold text-emerald-700 mb-4">
+              Your Score: {finalScore}/5
+            </div>
+            <p className="text-lg text-emerald-600 mb-6">
+              Exam submitted successfully!
+            </p>
+            <button
+              onClick={() => navigate('/assignments')}
+              className="rounded-3xl bg-emerald-600 px-6 py-3 text-white font-semibold shadow-sm transition hover:bg-emerald-700"
+            >
+              Back to Assignments
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
